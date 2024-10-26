@@ -60,6 +60,7 @@ func VerifyBlock(b *proto.Block) bool {
 }
 
 func SignBlock(pk *crypto.PrivateKey, b *proto.Block) *crypto.Signature {
+	// 如果有交易，就创建树根
 	if len(b.Transactions) > 0 {
 		tree, err := GetMerkeTree(b)
 		if err != nil {
@@ -67,6 +68,7 @@ func SignBlock(pk *crypto.PrivateKey, b *proto.Block) *crypto.Signature {
 		}
 		b.Header.RootHash = tree.MerkleRoot()
 	}
+	// 在交易时，需要私钥的签名区块
 	hash := HashBlock(b)
 	sig := pk.Sign(hash)
 	b.PublicKey = pk.Public().Bytes()

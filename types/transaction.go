@@ -22,6 +22,7 @@ func HashTransaction(tx *proto.Transaction) []byte {
 }
 
 func VerifyTransaction(tx *proto.Transaction) bool {
+	// 交易之前需要确定有没有签名
 	for _, input := range tx.Inputs {
 		if len(input.Signature) == 0 {
 			panic("the transaction has no signature")

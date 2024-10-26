@@ -52,6 +52,7 @@ func (pool *Mempool) Len() int {
 func (pool *Mempool) Has(tx *proto.Transaction) bool {
 	pool.lock.RLock()
 	defer pool.lock.RUnlock()
+
 	hash := hex.EncodeToString(types.HashTransaction(tx))
 	_, ok := pool.txx[hash]
 	return ok
@@ -87,6 +88,7 @@ type Node struct {
 }
 
 func NewNode(cfg ServerConfig) *Node {
+	// zap的初始化
 	loggerConfig := zap.NewDevelopmentConfig()
 	loggerConfig.EncoderConfig.TimeKey = ""
 	logger, _ := loggerConfig.Build()
@@ -125,6 +127,8 @@ func (n *Node) Start(listenAddr string, bootstrapNodes []string) error {
 
 }
 
+// 对等式网络（peer-to-peer， 简称P2P），又称点对点技术，是无中心服务器、依靠用户群（peers）交换信息的互联网体系，它的作用在于，减低以往网路传输中的节点，以降低资料遗失的风险。
+// P2P在网络隐私要求高和文件共享领域中，得到了广泛的应用。使用纯P2P技术的网络系统有比特币、Gnutella，或自由网等。
 func (n *Node) addPeer(c proto.NodeClient, v *proto.Version) {
 	n.peerLock.Lock()
 	defer n.peerLock.Unlock()
@@ -164,6 +168,7 @@ func (n *Node) canConnectWith(addr string) bool {
 	return true
 }
 
+// 检测连接的网络并建立p2p连接
 func (n *Node) BootstrapNewwork(addrs []string) error {
 	for _, addr := range addrs {
 		if !n.canConnectWith(addr) {
@@ -205,6 +210,7 @@ func (n *Node) Handshake(ctx context.Context, v *proto.Version) (*proto.Version,
 	return n.getVersion(), nil
 }
 
+// 将交易放入交易内存池
 func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*proto.Ack, error) {
 	peer, _ := peer.FromContext(ctx)
 	hash := hex.EncodeToString(types.HashTransaction(tx))

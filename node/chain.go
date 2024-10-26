@@ -188,6 +188,7 @@ func (c *Chain) ValidateTransaction(tx *proto.Transaction) error {
 	return nil
 }
 
+// 初始化链上的第一个块
 func createGenesisBlock() *proto.Block {
 	privKey := crypto.NewPrivateKeyFromSeedStr(godseed)
 
